@@ -44,16 +44,87 @@ provider:
 # you can define service wide environment variables here
 #  environment:
 #    variable1: value1
+plugins:
+  - serverless-aws-documentation
+
 
 # you can add packaging information here
 package:
   artifact: target/hcqis-auth-dev.jar
 
+# These are our API models for swagger
+custom:
+  client:
+    bucketName: paas-serverless-${opt:stage}-swagger-ui
+    distributionFolder: build/swagger-ui
+  documentation:
+    models:
+      -
+        name: "Registration"
+        description: "This is a registration"
+        contentType: "application/json"
+        schema:
+          type: "object"
+          properties:
+            user:
+              type: "string"
+              required: true
+            emailAddress:
+              type: "string"
+              required: true
+            activationDate:
+              type: "string"
+              required: true
+            duration:
+              type: "integer"
+              required: true
+            mfaDeviceId:
+              type: "string"
+              required: false
+      -
+        name: "RegistryError"
+        description: "This is an registry error"
+        contentType: "application/json"
+        schema:
+          type: "object"
+          properties:
+            errorMessage:
+              type: "string"
+              
+
 functions:
   register:
     handler: org.hcqis.RegistryHandler
+    role: ${env:LAMBDA_EXECUTION_ROLEARN}
+    events:
+      - http:
+          path: /v1/registry
+          method: put
+          cors: true
+          private: true
+          documentation:
+            summary: "Register for an authentication jwt"
+            description: "Register for an authentication jwt"
+            tags:
+              - "Registry"
+            requestBody:
+              description: "The registry details, namely a user id and an email address where a presigned url will be sent for jwt delivery"
+            requestModels:
+              "application/json": "Registry"
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "The registry metadata"
+                responseModels:
+                  "application/json": "Registry"
+              -
+                statusCode: "400"
+                responseModels:
+                  "application/json": "RegistryError"
   registerMfa:
     handler: org.hcqis.MfaRegistryHandler
+    role: ${env:LAMBDA_EXECUTION_ROLEARN}
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -100,3 +171,34 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+
+resources:
+  Resources:
+    lambdakey:
+      Type: AWS::KMS::Key
+      Properties:
+        AliasName: "mfa-api-kms"
+        Description: "KMS key for the mfa api"
+        Enabled: true
+        KeyPolicy: 
+          Version: "2012-10-17"
+          Id: "mfa-api-key-lambda-1"
+          Statement: 
+            Sid: "Allow administration of the key"
+            Effect: "Allow"
+            Principal: 
+              AWS: "${env:LAMBDA_ROLE_ARN}"
+            Action: 
+              - "kms:Create*"
+              - "kms:Describe*"
+              - "kms:Enable*"
+              - "kms:List*"
+              - "kms:Put*"
+              - "kms:Update*"
+              - "kms:Revoke*"
+              - "kms:Disable*"
+              - "kms:Get*"
+              - "kms:Delete*"
+              - "kms:ScheduleKeyDeletion"
+              - "kms:CancelKeyDeletion"
+            Resource: "*"
