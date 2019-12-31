@@ -20,10 +20,13 @@ service: aws-java-maven # NOTE: update this with your service name
 provider:
   name: aws
   runtime: java8
+  environment:
+    KEY_ARN: !GetAtt lambdaKey.Arn
+    TOKEN_DURATION: 30
 
 # you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+stage: dev
+region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -44,16 +47,80 @@ provider:
 # you can define service wide environment variables here
 #  environment:
 #    variable1: value1
+plugins:
+  - serverless-aws-documentation
+
 
 # you can add packaging information here
 package:
   artifact: target/hcqis-auth-dev.jar
 
+# These are our API models for swagger
+custom:
+  client:
+    distributionFolder: build/swagger-ui
+  documentation:
+    models:
+      -
+        name: "Registration"
+        description: "This is a registration"
+        contentType: "application/json"
+        schema:
+          type: "object"
+          properties:
+            user:
+              type: "string"
+            emailAddress:
+              type: "string"
+            activationDate:
+              type: "string"
+            duration:
+              type: "integer"
+            mfaDeviceId:
+              type: "string"
+      -
+        name: "RegistrationError"
+        description: "This is an registration error"
+        contentType: "application/json"
+        schema:
+          type: "object"
+          properties:
+            errorMessage:
+              type: "string"
+              
 functions:
   register:
     handler: org.hcqis.RegistryHandler
+    role: lambdaRole
+    events:
+      - http:
+          path: /v1/registration
+          method: put
+          cors: true
+          # private: true
+          documentation:
+            summary: "Register for an authentication jwt"
+            description: "Register for an authentication jwt"
+            tags:
+              - "Registration"
+            requestBody:
+              description: "The registry details, namely a user id and an email address where a presigned url will be sent for jwt delivery"
+            requestModels:
+              "application/json": "Registration"
+            methodResponses:
+              -
+                statusCode: "200"
+                responseBody:
+                  description: "The registry metadata"
+                responseModels:
+                  "application/json": "Registration"
+              -
+                statusCode: "400"
+                responseModels:
+                  "application/json": "RegistrationError"
   registerMfa:
     handler: org.hcqis.MfaRegistryHandler
+    role: lambdaRole
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -100,3 +167,77 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+
+resources:
+  Resources:
+    lambdaRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: MFAAuthAPIRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        Policies:
+          - PolicyName: MFAAuthAPIPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'Fn::Join':
+                      - ':'
+                      -
+                        - 'arn:aws:logs'
+                        - Ref: 'AWS::Region'
+                        - Ref: 'AWS::AccountId'
+                        - 'log-group:/aws/lambda/*:*:*'
+                - Effect: "Allow"
+                  Action:
+                    - "s3:PutObject"
+                  Resource:
+                    Fn::Join:
+                      - ""
+                      - - "arn:aws:s3:::"
+                        - "Ref" : "ServerlessDeploymentBucket"
+    lambdaKey:
+      Type: AWS::KMS::Key
+      Properties:
+        Description: "KMS key for the mfa api"
+        Enabled: true
+        KeyPolicy: 
+          Version: "2012-10-17"
+          Id: "mfa-api-key-lambda"
+          Statement: 
+            Sid: "Allow administration of the key"
+            Effect: "Allow"
+            Principal: 
+              AWS: 
+                - !GetAtt lambdaRole.Arn
+                - "${env:CREATOR_IAM_ARN}"
+            Action: 
+              - "kms:Encrypt"
+              - "kms:Decrypt"
+              - "kms:Create*"
+              - "kms:Describe*"
+              - "kms:Enable*"
+              - "kms:List*"
+              - "kms:Put*"
+              - "kms:Update*"
+              - "kms:Revoke*"
+              - "kms:Disable*"
+              - "kms:Get*"
+              - "kms:Delete*"
+              - "kms:ScheduleKeyDeletion"
+              - "kms:CancelKeyDeletion"
+            Resource: "*"
