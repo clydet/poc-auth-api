@@ -20,6 +20,9 @@ service: aws-java-maven # NOTE: update this with your service name
 provider:
   name: aws
   runtime: java8
+  environment:
+    KEY_ARN: !GetAtt lambdaKey.Arn
+    TOKEN_DURATION: 30
 
 # you can overwrite defaults here
 stage: dev
@@ -223,6 +226,8 @@ resources:
                 - !GetAtt lambdaRole.Arn
                 - "${env:CREATOR_IAM_ARN}"
             Action: 
+              - "kms:Encrypt"
+              - "kms:Decrypt"
               - "kms:Create*"
               - "kms:Describe*"
               - "kms:Enable*"

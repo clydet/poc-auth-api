@@ -45,6 +45,11 @@
       <version>2.8.5</version>
     </dependency>
     <dependency>
+      <groupId>ro.ghionoiu</groupId>
+      <artifactId>kms-jwt</artifactId>
+      <version>0.0.3</version>
+    </dependency>
+    <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk</artifactId>
       <version>1.11.253</version>
