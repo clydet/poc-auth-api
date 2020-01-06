@@ -25,7 +25,6 @@ provider:
     TOKEN_DURATION: 30
 
 # you can overwrite defaults here
-stage: dev
 region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
@@ -167,77 +166,11 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
-
 resources:
-  Resources:
-    lambdaRole:
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: MFAAuthAPIRole
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service:
-                  - lambda.amazonaws.com
-              Action: sts:AssumeRole
-        ManagedPolicyArns:
-          - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-        Policies:
-          - PolicyName: MFAAuthAPIPolicy
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
-                  Resource:
-                    - 'Fn::Join':
-                      - ':'
-                      -
-                        - 'arn:aws:logs'
-                        - Ref: 'AWS::Region'
-                        - Ref: 'AWS::AccountId'
-                        - 'log-group:/aws/lambda/*:*:*'
-                - Effect: "Allow"
-                  Action:
-                    - "s3:PutObject"
-                  Resource:
-                    Fn::Join:
-                      - ""
-                      - - "arn:aws:s3:::"
-                        - "Ref" : "ServerlessDeploymentBucket"
-    lambdaKey:
-      Type: AWS::KMS::Key
-      Properties:
-        Description: "KMS key for the mfa api"
-        Enabled: true
-        KeyPolicy: 
-          Version: "2012-10-17"
-          Id: "mfa-api-key-lambda"
-          Statement: 
-            Sid: "Allow administration of the key"
-            Effect: "Allow"
-            Principal: 
-              AWS: 
-                - !GetAtt lambdaRole.Arn
-                - "${env:CREATOR_IAM_ARN}"
-            Action: 
-              - "kms:Encrypt"
-              - "kms:Decrypt"
-              - "kms:Create*"
-              - "kms:Describe*"
-              - "kms:Enable*"
-              - "kms:List*"
-              - "kms:Put*"
-              - "kms:Update*"
-              - "kms:Revoke*"
-              - "kms:Disable*"
-              - "kms:Get*"
-              - "kms:Delete*"
-              - "kms:ScheduleKeyDeletion"
-              - "kms:CancelKeyDeletion"
-            Resource: "*"
+  # IAM
+  - ${file(provision/iam-lambda-role.yml)}
+  # KMS
+  - ${file(provision/kms-lambda-key.yml)}
+  # Cognito
+  - ${file(provision/cognito-user-pool.yml)}
+  - ${file(provision/cognito-identity-pool.yml)}

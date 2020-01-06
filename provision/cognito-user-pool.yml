@@ -1,0 +1,52 @@
+Resources:
+  mfaAuthUserPool:
+    Type: "AWS::Cognito::UserPool"
+    Properties:
+      UserPoolName: mfa-auth-${opt:stage}-user-pool
+      # AutoVerifiedAttributes:
+      #   - email
+      # UsernameAttributes:
+      #   - email
+      # MfaConfiguration: "ON"
+  
+  mfaAuthUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      # Generate an app client name based on the stage
+      ClientName: mfa-auth-${opt:stage}-user-pool-client
+      UserPoolId:
+        Ref: mfaAuthUserPool
+      ExplicitAuthFlows:
+        - ADMIN_NO_SRP_AUTH
+      GenerateSecret: false
+  
+  mfaAuthUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain 
+    Properties:
+      UserPoolId: !Ref mfaAuthUserPool
+      Domain: mfa-auth-${opt:stage}-user-pool-domain
+  
+  mfaAuthUserPoolResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      UserPoolId: !Ref mfaAuthUserPool
+      Identifier: mfa-auth-${opt:stage}-user-pool-resource-server
+      Name: mfa-auth-${opt:stage}-user-pool-resource-server
+      Scopes:
+        - ScopeName: "ReadScope"
+          ScopeDescription: "A read placeholder scope"
+        - ScopeName: "WriteScope"
+          ScopeDescription: "A write placeholder scope"
+
+Outputs:
+  UserPoolId:
+    Value:
+      Ref: mfaAuthUserPool
+  
+  UserPoolClientId:
+    Value:
+      Ref: mfaAuthUserPoolClient
+  
+  UserPoolDomain:
+    Value:
+      Ref: mfaAuthUserPoolDomain
