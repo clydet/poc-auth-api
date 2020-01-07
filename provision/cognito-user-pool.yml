@@ -50,3 +50,10 @@ Outputs:
   UserPoolDomain:
     Value:
       Ref: mfaAuthUserPoolDomain
+  
+  UserPoolArn:
+    Value: !GetAtt mfaAuthUserPool.Arn
+  
+  UserPoolResourceServer:
+    Value:
+      Ref: mfaAuthUserPoolResourceServer

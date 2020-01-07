@@ -51,8 +51,13 @@
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-cognitoidp</artifactId>
+      <version>1.11.698</version>
+  </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk</artifactId>
-      <version>1.11.253</version>
+      <version>1.11.698</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

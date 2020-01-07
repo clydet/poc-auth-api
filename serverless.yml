@@ -22,6 +22,8 @@ provider:
   runtime: java8
   environment:
     KEY_ARN: !GetAtt lambdaKey.Arn
+    USER_POOL_ID: !Ref mfaAuthUserPool
+    USER_POOL_RESOURCE_SERVER: !Ref mfaAuthUserPoolResourceServer
     TOKEN_DURATION: 30
 
 # you can overwrite defaults here
@@ -120,6 +122,14 @@ functions:
   registerMfa:
     handler: org.hcqis.MfaRegistryHandler
     role: lambdaRole
+  sampler:
+    handler: org.hcqis.SampleAppHandler
+    role: lambdaRole
+    events:
+      - http:
+          path: /v1/sampler
+          method: get
+          cors: true
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

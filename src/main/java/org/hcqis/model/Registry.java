@@ -1,16 +1,16 @@
 package org.hcqis.model;
 
 public class Registry {
-    public String user;
+    public String clientName;
     public String emailAddress;
     public String mfaDeviceId;
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
-    public String getUser() {
-        return this.user;
+    public String getClientName() {
+        return this.clientName;
     }
 
     public void setEmailAddress(String emailAddress) {
@@ -31,6 +31,6 @@ public class Registry {
 
     @Override
     public String toString() {
-        return "Registry [emailAddress=" + emailAddress + ", mfaDeviceId=" + mfaDeviceId + ", user=" + user + "]";
+        return "Registry [emailAddress=" + emailAddress + ", mfaDeviceId=" + mfaDeviceId + ", user=" + clientName + "]";
     }
 }
