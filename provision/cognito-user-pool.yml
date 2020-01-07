@@ -3,11 +3,6 @@ Resources:
     Type: "AWS::Cognito::UserPool"
     Properties:
       UserPoolName: mfa-auth-${opt:stage}-user-pool
-      # AutoVerifiedAttributes:
-      #   - email
-      # UsernameAttributes:
-      #   - email
-      # MfaConfiguration: "ON"
   
   mfaAuthUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
