@@ -2,11 +2,11 @@ Resources:
     lambdaKey:
       Type: AWS::KMS::Key
       Properties:
-        Description: "KMS key for the mfa api"
+        Description: "KMS key for the auth api"
         Enabled: true
         KeyPolicy: 
           Version: "2012-10-17"
-          Id: "mfa-api-key-lambda"
+          Id: "auth-api-key-lambda"
           Statement: 
             Sid: "Allow administration of the key"
             Effect: "Allow"

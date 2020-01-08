@@ -5,9 +5,8 @@ provider:
   runtime: java8
   environment:
     KEY_ARN: !GetAtt lambdaKey.Arn
-    USER_POOL_ID: !Ref mfaAuthUserPool
-    USER_POOL_RESOURCE_SERVER: !Ref mfaAuthUserPoolResourceServer
-    TOKEN_DURATION: 30
+    USER_POOL_ID: !Ref AuthUserPool
+    USER_POOL_RESOURCE_SERVER: !Ref AuthUserPoolResourceServer
 
 region: us-east-1
 
@@ -18,15 +17,12 @@ plugins:
 package:
   artifact: target/hcqis-auth-dev.jar
 
-# These are our API models for swagger
 custom:
   resourceServer:
-    name: mfa-auth-${opt:stage}-user-pool-resource-server
+    name: auth-${opt:stage}-user-pool-resource-server
     scopes:
       read: read
       write: write
-  client:
-    distributionFolder: build/swagger-ui
   documentation:
     models:
       -
@@ -36,15 +32,7 @@ custom:
         schema:
           type: "object"
           properties:
-            user:
-              type: "string"
-            emailAddress:
-              type: "string"
-            activationDate:
-              type: "string"
-            duration:
-              type: "integer"
-            mfaDeviceId:
+            clientName:
               type: "string"
       -
         name: "RegistrationError"
@@ -65,7 +53,6 @@ functions:
           path: /v1/registration
           method: put
           cors: true
-          # private: true
           documentation:
             summary: "Register for an authentication jwt"
             description: "Register for an authentication jwt"

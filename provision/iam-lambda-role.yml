@@ -2,7 +2,7 @@ Resources:
   lambdaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: MFAAuthAPIRole
+      RoleName: AuthAPIRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -14,7 +14,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
       Policies:
-        - PolicyName: MFAAuthAPIPolicy
+        - PolicyName: AuthAPIPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -34,7 +34,7 @@ Resources:
               - Effect: "Allow"
                 Action:
                   - cognito-idp:CreateUserPoolClient
-                Resource: !GetAtt mfaAuthUserPool.Arn
+                Resource: !GetAtt AuthUserPool.Arn
               - Effect: "Allow"
                 Action:
                   - "s3:PutObject"

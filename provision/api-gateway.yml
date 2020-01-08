@@ -11,7 +11,7 @@ Resources:
       RestApiId:
         Ref: ApiGatewayRestApi
       ProviderARNs:
-        - !GetAtt mfaAuthUserPool.Arn
+        - !GetAtt AuthUserPool.Arn
       
   ApiGatewayMethodV1SamplerGet:
     Type: AWS::ApiGateway::Method

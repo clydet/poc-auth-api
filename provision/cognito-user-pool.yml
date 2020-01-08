@@ -1,21 +1,21 @@
 Resources:
-  mfaAuthUserPool:
+  AuthUserPool:
     Type: "AWS::Cognito::UserPool"
     Properties:
-      UserPoolName: mfa-auth-${opt:stage}-user-pool
+      UserPoolName: auth-${opt:stage}-user-pool
   
-  mfaAuthUserPoolDomain:
+  AuthUserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain 
     Properties:
-      UserPoolId: !Ref mfaAuthUserPool
-      Domain: mfa-auth-${opt:stage}-user-pool-domain
+      UserPoolId: !Ref AuthUserPool
+      Domain: auth-${opt:stage}-user-pool-domain
 
-  mfaAuthUserPoolResourceServer:
+  AuthUserPoolResourceServer:
     Type: AWS::Cognito::UserPoolResourceServer
     Properties:
-      UserPoolId: !Ref mfaAuthUserPool
+      UserPoolId: !Ref AuthUserPool
       Identifier: ${self:custom.resourceServer.name}
-      Name: mfa-auth-${opt:stage}-user-pool-resource-server
+      Name: auth-${opt:stage}-user-pool-resource-server
       Scopes:
         - ScopeName: ${self:custom.resourceServer.scopes.read}
           ScopeDescription: "A read placeholder scope"
@@ -25,15 +25,15 @@ Resources:
 Outputs:
   UserPoolId:
     Value:
-      Ref: mfaAuthUserPool
+      Ref: AuthUserPool
   
   UserPoolDomain:
     Value:
-      Ref: mfaAuthUserPoolDomain
+      Ref: AuthUserPoolDomain
   
   UserPoolArn:
-    Value: !GetAtt mfaAuthUserPool.Arn
+    Value: !GetAtt AuthUserPool.Arn
   
   UserPoolResourceServer:
     Value:
-      Ref: mfaAuthUserPoolResourceServer
+      Ref: AuthUserPoolResourceServer
