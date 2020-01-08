@@ -1,0 +1,26 @@
+Resources:
+  #####
+  # This Authorizer is used for validating the JWT token before invoking the lambda
+  #####
+  authApiGatewayAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: CognitoUserPool
+      Type: COGNITO_USER_POOLS
+      IdentitySource: method.request.header.Authorization
+      RestApiId:
+        Ref: ApiGatewayRestApi
+      ProviderARNs:
+        - !GetAtt AuthUserPool.Arn
+      
+  ApiGatewayMethodV1SamplerGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationScopes:
+        - ${self:custom.resourceServer.name}/${self:custom.resourceServer.scopes.read}
+  
+  ApiGatewayMethodV1SamplerPost:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationScopes:
+        - ${self:custom.resourceServer.name}/${self:custom.resourceServer.scopes.write}

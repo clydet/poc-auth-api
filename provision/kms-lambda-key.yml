@@ -1,0 +1,32 @@
+Resources:
+    lambdaKey:
+      Type: AWS::KMS::Key
+      Properties:
+        Description: "KMS key for the auth api"
+        Enabled: true
+        KeyPolicy: 
+          Version: "2012-10-17"
+          Id: "auth-api-key-lambda"
+          Statement: 
+            Sid: "Allow administration of the key"
+            Effect: "Allow"
+            Principal: 
+              AWS: 
+                - !GetAtt lambdaRole.Arn
+                - "${env:CREATOR_IAM_ARN}"
+            Action: 
+              - "kms:Encrypt"
+              - "kms:Decrypt"
+              - "kms:Create*"
+              - "kms:Describe*"
+              - "kms:Enable*"
+              - "kms:List*"
+              - "kms:Put*"
+              - "kms:Update*"
+              - "kms:Revoke*"
+              - "kms:Disable*"
+              - "kms:Get*"
+              - "kms:Delete*"
+              - "kms:ScheduleKeyDeletion"
+              - "kms:CancelKeyDeletion"
+            Resource: "*"

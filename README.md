@@ -1,1 +1,1 @@
-# mfa-auth-api
+# auth-api

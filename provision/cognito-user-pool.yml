@@ -1,0 +1,39 @@
+Resources:
+  AuthUserPool:
+    Type: "AWS::Cognito::UserPool"
+    Properties:
+      UserPoolName: auth-${opt:stage}-user-pool
+  
+  AuthUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain 
+    Properties:
+      UserPoolId: !Ref AuthUserPool
+      Domain: auth-${opt:stage}-user-pool-domain
+
+  AuthUserPoolResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      UserPoolId: !Ref AuthUserPool
+      Identifier: ${self:custom.resourceServer.name}
+      Name: auth-${opt:stage}-user-pool-resource-server
+      Scopes:
+        - ScopeName: ${self:custom.resourceServer.scopes.read}
+          ScopeDescription: "A read placeholder scope"
+        - ScopeName: ${self:custom.resourceServer.scopes.write}
+          ScopeDescription: "A write placeholder scope"
+          
+Outputs:
+  UserPoolId:
+    Value:
+      Ref: AuthUserPool
+  
+  UserPoolDomain:
+    Value:
+      Ref: AuthUserPoolDomain
+  
+  UserPoolArn:
+    Value: !GetAtt AuthUserPool.Arn
+  
+  UserPoolResourceServer:
+    Value:
+      Ref: AuthUserPoolResourceServer
