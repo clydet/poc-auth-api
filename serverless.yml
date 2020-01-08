@@ -86,9 +86,6 @@ functions:
                 statusCode: "400"
                 responseModels:
                   "application/json": "RegistrationError"
-  registerMfa:
-    handler: org.hcqis.MfaRegistryHandler
-    role: lambdaRole
   
   sampler:
     handler: org.hcqis.SampleAppHandler
@@ -97,6 +94,18 @@ functions:
       - http:
           path: /v1/sampler
           method: get
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref authApiGatewayAuthorizer
+  
+  samplerPost:
+    handler: org.hcqis.SampleAppHandler
+    role: lambdaRole
+    events:
+      - http:
+          path: /v1/sampler
+          method: post
           cors: true
           authorizer:
             type: COGNITO_USER_POOLS

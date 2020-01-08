@@ -11,12 +11,12 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 public class SampleAppHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
-	private static final Logger LOG = LogManager.getLogger(SampleAppHandler.class);
-
+    private static final Logger LOG = LogManager.getLogger(SampleAppHandler.class);
+    
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		LOG.info("received: {}", input);
-		Response responseBody = new Response("You have authenticated successfully!", input);
+        Response responseBody = new Response("You have authenticated successfully!", input);
 		return ApiGatewayResponse.builder()
 				.setStatusCode(200)
 				.setObjectBody(responseBody)

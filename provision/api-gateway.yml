@@ -18,3 +18,9 @@ Resources:
     Properties:
       AuthorizationScopes:
         - ${self:custom.resourceServer.name}/${self:custom.resourceServer.scopes.read}
+  
+  ApiGatewayMethodV1SamplerPost:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationScopes:
+        - ${self:custom.resourceServer.name}/${self:custom.resourceServer.scopes.write}
