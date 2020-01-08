@@ -12,3 +12,9 @@ Resources:
         Ref: ApiGatewayRestApi
       ProviderARNs:
         - !GetAtt mfaAuthUserPool.Arn
+      
+  ApiGatewayMethodV1SamplerGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationScopes:
+        - ${self:custom.resourceServer.name}/${self:custom.resourceServer.scopes.read}

@@ -20,6 +20,11 @@ package:
 
 # These are our API models for swagger
 custom:
+  resourceServer:
+    name: mfa-auth-${opt:stage}-user-pool-resource-server
+    scopes:
+      read: read
+      write: write
   client:
     distributionFolder: build/swagger-ui
   documentation:
@@ -84,6 +89,7 @@ functions:
   registerMfa:
     handler: org.hcqis.MfaRegistryHandler
     role: lambdaRole
+  
   sampler:
     handler: org.hcqis.SampleAppHandler
     role: lambdaRole
@@ -94,8 +100,7 @@ functions:
           cors: true
           authorizer:
             type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: authApiGatewayAuthorizer
+            authorizerId: !Ref authApiGatewayAuthorizer
 
 resources:
   # IAM
@@ -104,6 +109,5 @@ resources:
   - ${file(provision/kms-lambda-key.yml)}
   # Cognito
   - ${file(provision/cognito-user-pool.yml)}
-  - ${file(provision/cognito-identity-pool.yml)}
   # API Gateway
   - ${file(provision/api-gateway.yml)}
