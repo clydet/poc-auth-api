@@ -4,7 +4,6 @@ provider:
   name: aws
   runtime: java8
   environment:
-    KEY_ARN: !GetAtt lambdaKey.Arn
     USER_POOL_ID: !Ref AuthUserPool
     USER_POOL_RESOURCE_SERVER: !Ref AuthUserPoolResourceServer
 
@@ -101,8 +100,6 @@ functions:
 resources:
   # IAM
   - ${file(provision/iam-lambda-role.yml)}
-  # KMS
-  - ${file(provision/kms-lambda-key.yml)}
   # Cognito
   - ${file(provision/cognito-user-pool.yml)}
   # API Gateway
