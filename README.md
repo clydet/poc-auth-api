@@ -73,7 +73,8 @@ Base64 encode credentials for token retrieval
 ENCODED_CREDS=$(echo -n [clientId]:[clientSecret] | openssl base64)
 ```
 
-### Authenticate specifying the `client_credentials` grant type. More information on this oauth flow may be founr [here](https://aws.amazon.com/blogs/mobile/understanding-amazon-cognito-user-pool-oauth-2-0-grants/).
+### Authenticate specifying the `client_credentials` grant type.
+
 ```
 curl --request POST \
   --url https://auth-dev-user-pool-domain.auth.us-east-1.amazoncognito.com/oauth2/token \
@@ -115,3 +116,7 @@ curl --request GET \
   --header 'authorization: Bearer 
   [Access Token]'
 ```
+
+### More information on this oauth flow may be found [here](https://aws.amazon.com/blogs/mobile/understanding-amazon-cognito-user-pool-oauth-2-0-grants/).
+
+![auth diagram](https://d2908q01vomqb2.cloudfront.net/0a57cb53ba59c46fc4b692527a38a87c78d84028/2018/11/08/client_creds_grant-1024x661.jpg)
