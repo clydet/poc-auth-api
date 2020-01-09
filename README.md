@@ -3,6 +3,9 @@ This is a proof of concept aimed at demoonstrating the viability of a cognito ba
 
 ## Deployment
 
+### Dockerized workspace
+The following deployment steps may be executed via the `run-docker-shell.sh` script. This of course assumes that you have access to a bash shell.
+
 ### Build source
 Run `mvn clean package`
 
