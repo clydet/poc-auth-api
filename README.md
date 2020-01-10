@@ -1,5 +1,7 @@
 # auth-api
-This is a proof of concept aimed at demoonstrating the viability of a cognito based machine to machine authentication flow.
+This is a proof of concept aimed at demonstrating the viability of a cognito based machine to machine authentication flow.
+
+![Demo diagram](docs/APIGatewayAuthPrototype.png)
 
 ## Deployment
 

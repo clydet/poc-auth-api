@@ -9,7 +9,7 @@ RUN yum install -y which python-devel python-pip curl unzip wget gcc-c++ make \
   && unzip awscli-bundle.zip \
   && ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws \
   && aws --version \
-  && yum install -y jq groff maven
+  && yum install -y jq groff maven openssl
 
 RUN pip install --upgrade pip && pip -V
 
